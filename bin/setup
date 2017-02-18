@@ -1,12 +1,54 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
-gem install bundler --conservative
-bundle check || bundle install
-
-if [ -z "$CI" ]; then
-  bundle exec appraisal install
+# Make sure $LANG is set to UTF-8
+if ! echo $LANG | grep UTF &> /dev/null; then
+  echo "Your system language is not UTF-8; please check the value of \$LANG"
+  exit
 fi
 
-bundle exec rake dummy:db:create
+# If Homebrew isn't installed, then install it.
+if [ ! -x /usr/local/bin/brew ]; then
+  echo "Installing Homebrew..."
+  ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+fi
+
+# If git isn't installed, install it
+
+
+# If PhantomJS isn't installed, install it
+
+
+# If Postgres 9.4 isn't installed, install it
+
+# If Postgres is running (potentially an incorrect version), stop it
+
+# Start Postgres 9.4
+
+
+# If Redis isn't installed, install it
+
+# If Redis is running (potentially an old version), stop it
+
+# Start Redis
+
+
+# Create users for Postgres
+
+
+# Install gems
+echo "Installing gems..."
+bundle install
+
+# Set necessary secrets in .env
+cp .env.example .env
+
+# Prepare your database
+echo "Preparing the database..."
+RAILS_ENV=development bundle exec rake db:create db:migrate db:seed
+RAILS_ENV=test        bundle exec rake db:create db:migrate
+
+## Run tests ##
+echo "Done! Running tests..."
+bundle exec rspec
